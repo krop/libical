@@ -72,7 +72,7 @@ macro(buildme _name _srcs)
     target_link_libraries(${_name} ${ICU_I18N_LIBRARY})
   endif()
   if(BDB_FOUND)
-    target_link_libraries(${_name} ${BDB_LIBRARY})
+    target_link_libraries(${_name} BDB::BDB)
   endif()
 endmacro()
 
