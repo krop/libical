@@ -1,54 +1,56 @@
-# Finds the Berkeley DB Library
+#.rst:
+# FindBDB
+# -------
 #
-#  BDB_FOUND          - True if Berkeley DB found.
-#  BDB_INCLUDE_DIR    - Directory to include to get Berkeley DB headers
-#  BDB_LIBRARY        - Library to link against for the Berkeley DB
+# Finds the Berkeley DB Library.
+#
+# This will define the following variables:
+#
+#  ``BDB_FOUND``
+#     TRUE if Berkeley DB found.
+#
+#  ``BDB_INCLUDE_DIRS``
+#     This should be passed to target_include_directories() if
+#     the target is not used for linking.
+#
+#  ``BDB_LIBRARIES``
+#     The BDB library. This can be passed to target_link_libraries()
+#     if the exported target is not used.
+#
+# The following variables are defined for backward compatibility
 #
 
-set_package_properties(BDB PROPERTIES
-  DESCRIPTION "Berkeley DB storage"
-  URL "http://www.oracle.com/database/berkeley-db"
-)
-
-if(BDB_INCLUDE_DIR AND BDB_LIBRARY)
-  # Already in cache, be silent
-  set(BDB_FIND_QUIETLY TRUE)
-endif()
-
-# Look for the header file.
-find_path(
-  BDB_INCLUDE_DIR
+find_path(BDB_INCLUDE_DIRS
   NAMES db.h
   HINTS /usr/local/opt/db/include
   DOC "Include directory for the Berkeley DB library"
 )
-mark_as_advanced(BDB_INCLUDE_DIR)
 
-# Look for the library.
-find_library(
-  BDB_LIBRARY
+find_library(BDB_LIBRARIES
   NAMES db
   HINTS /usr/local/opt/db4/lib
   DOC "Libraries to link against for the Berkeley DB"
 )
-mark_as_advanced(BDB_LIBRARY)
 
-# Copy the results to the output variables.
-if(BDB_INCLUDE_DIR AND BDB_LIBRARY)
-  set(BDB_FOUND 1)
-else()
-  set(BDB_FOUND 0)
-endif()
+include(FindPackageHandleStandardArgs)
+
+find_package_handle_standard_args(BDB
+  FOUND_VAR BDB_FOUND
+  REQUIRED_VARS BDB_LIBRARIES BDB_INCLUDE_DIRS
+)
 
 if(BDB_FOUND)
-  if(NOT BDB_FIND_QUIETLY)
-    message(STATUS "Found Berkeley DB header files in ${BDB_INCLUDE_DIR}")
-    message(STATUS "Found Berkeley libraries: ${BDB_LIBRARY}")
-  endif()
-else()
-  if(BDB_FIND_REQUIRED)
-    message(FATAL_ERROR "Could not find Berkeley DB")
-  else()
-    message(STATUS "Optional package Berkeley DB was not found")
-  endif()
+  add_library(BDB::BDB UNKNOWN IMPORTED)
+  set_target_properties(BDB::BDB PROPERTIES
+    IMPORTED_LOCATION "${BDB_LIBRARIES}"
+    INTERFACE_INCLUDE_DIRECTORIES "${BDB_INCLUDE_DIRS}"
+  )
 endif()
+
+mark_as_advanced(BDB_LIBRARIES BDB_INCLUDE_DIRS)
+
+include(FeatureSummary)
+set_package_properties(BDB PROPERTIES
+  DESCRIPTION "Berkeley DB storage"
+  URL "https://www.oracle.com/database/berkeley-db"
+)
