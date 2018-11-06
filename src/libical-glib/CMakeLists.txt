@@ -8,8 +8,8 @@ add_executable(src-generator
   tools/xml-parser.h
 )
 
-target_compile_options(src-generator PUBLIC ${GLIB_CFLAGS} ${LIBXML_CFLAGS} -DG_LOG_DOMAIN=\"src-generator\")
-target_link_libraries(src-generator ${GLIB_LIBRARIES} ${LIBXML_LIBRARIES})
+target_compile_options(src-generator PUBLIC ${GLIB_CFLAGS} -DG_LOG_DOMAIN=\"src-generator\")
+target_link_libraries(src-generator ${GLIB_LIBRARIES} LIBXML2::LIBXML2)
 
 list(APPEND API_FILES
   api/i-cal-array.xml

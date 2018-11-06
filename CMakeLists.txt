@@ -362,8 +362,8 @@ if(ICAL_GLIB_VAPI)
 endif()
 
 set(MIN_GLIB "2.32")
-set(MIN_LIBXML "2.7.3")
-option(ICAL_GLIB "Build libical-glib interface. Requires glib ${MIN_GLIB} and libxml ${MIN_LIBXML} development packages or higher." True)
+set(MIN_LIBXML2 "2.7.3")
+option(ICAL_GLIB "Build libical-glib interface. Requires glib ${MIN_GLIB} and libxml ${MIN_LIBXML2} development packages or higher." True)
 add_feature_info(
   "Option ICAL_GLIB"
   ICAL_GLIB
@@ -375,21 +375,19 @@ if(ICAL_GLIB)
     TYPE OPTIONAL
     PURPOSE "For the optional libical-glib interface"
   )
-  find_package(LibXML ${MIN_LIBXML})
-  set_package_properties(LibXML PROPERTIES
+  find_package(LibXML2 ${MIN_LIBXML2} MODULE)
+  set_package_properties(LibXML2 PROPERTIES
     TYPE OPTIONAL
-    DESCRIPTION "a library providing XML and HTML support"
-    URL "http://xmlsoft.org"
     PURPOSE "For the optional libical-glib interface"
   )
-  if(GLIB_FOUND AND LIBXML_FOUND)
+  if(GLIB_FOUND AND LIBXML2_FOUND)
     set(HAVE_GLIB TRUE)
   elseif(GLIB_FOUND)
     message(FATAL_ERROR
       "You requested to build libical-glib, but the necessary development package "
-      "is missing or too low a version (libxml ${MIN_LIBXML} or higher is required)"
+      "is missing or too low a version (libxml ${MIN_LIBXML2} or higher is required)"
     )
-  elseif(LIBXML_FOUND)
+  elseif(LIBXML2_FOUND)
     message(FATAL_ERROR
       "You requested to build libical-glib, but the necessary development package "
       "is missing or too low a version (glib ${MIN_GLIB} or higher is required)"
@@ -398,7 +396,7 @@ if(ICAL_GLIB)
     message(FATAL_ERROR
       "You requested to build libical-glib, but the necessary development packages "
       "are missing or too low a version "
-      "(glib ${MIN_GLIB} and libxml ${MIN_LIBXML} or higher are required)"
+      "(glib ${MIN_GLIB} and libxml ${MIN_LIBXML2} or higher are required)"
       "Alternatively, disable the libical-glib build (by passing -DICAL_GLIB=False to cmake)"
     )
   endif()
