@@ -8,8 +8,8 @@ add_executable(src-generator
   tools/xml-parser.h
 )
 
-target_compile_options(src-generator PUBLIC ${GLIB_CFLAGS} -DG_LOG_DOMAIN=\"src-generator\")
-target_link_libraries(src-generator ${GLIB_LIBRARIES} LIBXML2::LIBXML2)
+target_compile_options(src-generator PUBLIC -DG_LOG_DOMAIN=\"src-generator\")
+target_link_libraries(src-generator GLIB2::GLIB2 LIBXML2::LIBXML2)
 
 list(APPEND API_FILES
   api/i-cal-array.xml
@@ -99,14 +99,13 @@ include_directories(
 
 add_library(ical-glib ${LIBRARY_TYPE} ${LIBICAL_GLIB_SOURCES})
 add_dependencies(ical-glib ical-header)
-target_compile_options(ical-glib PRIVATE ${GLIB_CFLAGS})
 target_compile_definitions(ical-glib PRIVATE -DG_LOG_DOMAIN="libical-glib" -DLIBICAL_GLIB_COMPILATION)
-target_link_libraries(ical-glib PRIVATE ical ${GLIB_LIBRARIES})
+target_link_libraries(ical-glib PRIVATE ical GLIB2::GLIB2)
 if(NOT SHARED_ONLY)
   add_library(ical-glib-static STATIC ${LIBICAL_GLIB_SOURCES})
   add_dependencies(ical-glib-static ical-header)
-  target_compile_options(ical-glib-static PUBLIC ${GLIB_CFLAGS} -DG_LOG_DOMAIN="libical-glib" -DLIBICAL_GLIB_COMPILATION)
-  target_link_libraries(ical-glib-static ${GLIB_LIBRARIES})
+  target_compile_options(ical-glib-static PUBLIC -DG_LOG_DOMAIN="libical-glib" -DLIBICAL_GLIB_COMPILATION)
+  target_link_libraries(ical-glib-static GLIB2::GLIB2)
 endif()
 
 # GObject Introspection
@@ -157,7 +156,7 @@ if(HAVE_INTROSPECTION)
   set(ICalGLib_${LIB_VERSION}_gir_VERSION ${LIBICAL_GLIB_GIR_VERSION_STRING})
   set(ICalGLib_${LIB_VERSION}_gir_LIBRARY "ICalGLib")
   set(ICalGLib_${LIB_VERSION}_gir_INCLUDES GObject-2.0 GLib-2.0)
-  set(ICalGLib_${LIB_VERSION}_gir_CFLAGS ${_includes} ${GLIB_CFLAGS} -DLIBICAL_GLIB_COMPILATION -I${CMAKE_CURRENT_BINARY_DIR} -I${CMAKE_CURRENT_SOURCE_DIR} -I${CMAKE_BINARY_DIR}/src/libical -I${CMAKE_SOURCE_DIR}/src/libical -I${CMAKE_BINARY_DIR}/src/libical-glib)
+  set(ICalGLib_${LIB_VERSION}_gir_CFLAGS ${_includes} ${GLIB2_CFLAGS} -DLIBICAL_GLIB_COMPILATION -I${CMAKE_CURRENT_BINARY_DIR} -I${CMAKE_CURRENT_SOURCE_DIR} -I${CMAKE_BINARY_DIR}/src/libical -I${CMAKE_SOURCE_DIR}/src/libical -I${CMAKE_BINARY_DIR}/src/libical-glib)
   set(ICalGLib_${LIB_VERSION}_gir_LIBS ical-glib)
   set(ICalGLib_${LIB_VERSION}_gir_FILES ${LIBICAL_GLIB_GIR_SOURCES})
 
