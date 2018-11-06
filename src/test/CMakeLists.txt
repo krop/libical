@@ -8,7 +8,7 @@ include_directories(
 )
 
 if(ICU_FOUND)
-  include_directories(${ICU_INCLUDE_DIR})
+  include_directories(${ICU_INCLUDE_DIRS})
 endif()
 
 if(BDB_FOUND)
@@ -33,7 +33,7 @@ macro(setprops _name)
   if(WIN32)
     set(tpath "${CMAKE_BINARY_DIR}/bin;%PATH%")
     if(ICU_FOUND)
-      set(tpath "${ICU_BINARY_DIR};${tpath}")
+      set(tpath "${ICU_ICU-CONFIG_EXECUTABLE};${tpath}")
     endif()
     set_tests_properties(${_name} PROPERTIES
       ENVIRONMENT "PATH=${tpath}"
@@ -66,10 +66,10 @@ macro(buildme _name _srcs)
 
   target_link_libraries(${_name} ${CMAKE_THREAD_LIBS_INIT})
   if(ICU_FOUND)
-    target_link_libraries(${_name} ${ICU_LIBRARY})
+    target_link_libraries(${_name} ${ICU_LIBRARIES})
   endif()
   if(ICU_I18N_FOUND)
-    target_link_libraries(${_name} ${ICU_I18N_LIBRARY})
+    target_link_libraries(${_name} ICU::i18n)
   endif()
   if(BDB_FOUND)
     target_link_libraries(${_name} BDB::BDB)
