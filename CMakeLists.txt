@@ -76,6 +76,8 @@ project(libical
    VERSION 3.0.95
    LANGUAGES C
 )
+
+# Used in config.h
 set(PROJECT_URL "http://libical.github.io/libical/")
 
 cmake_policy(SET CMP0003 NEW)
@@ -121,7 +123,7 @@ add_feature_info(
   "build shared libraries only"
 )
 if(SHARED_ONLY)
-  set(STATIC_ONLY False)
+  set(STATIC_ONLY FALSE)
   set(LIBRARY_TYPE SHARED)
 endif()
 
@@ -150,12 +152,12 @@ set_package_properties(Perl PROPERTIES
 
 # Ensure finding 64bit libs when using 64-bit compilers
 if(CMAKE_CL_64)
-  set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS True)
+  set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS TRUE)
 endif()
 
-# libicu is highly recommended for RSCALE support
-#  libicu can be found at http://www.icu-project.org
-#  RSCALE info at http://tools.ietf.org/html/rfc7529
+# libicu is highly recommended for RSCALE support.
+# libicu can be found at http://www.icu-project.org
+# RSCALE info at http://tools.ietf.org/html/rfc7529
 find_package(ICU OPTIONAL_COMPONENTS i18n)
 set_package_properties(ICU PROPERTIES
   TYPE RECOMMENDED
@@ -191,7 +193,7 @@ add_feature_info(
   "build in support for Berkeley DB storage"
 )
 if(BDB_FOUND)
-  set(HAVE_BDB True)
+  set(HAVE_BDB TRUE)
 endif()
 
 # MSVC specific definitions
@@ -216,8 +218,8 @@ if(WIN32)
 endif()
 
 # Use GNUInstallDirs
-
 include(GNUInstallDirs)
+
 set(LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR} CACHE STRING "Library directory name" FORCE)
 set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR} CACHE STRING "Include directory name" FORCE)
 set(SHARE_INSTALL_DIR ${CMAKE_INSTALL_DATAROOTDIR} CACHE STRING "Share directory name")
@@ -242,6 +244,7 @@ add_feature_info(
   ICAL_ERRORS_ARE_FATAL
   "icalerror_* calls will abort instead of internally signaling an error"
 )
+
 if(ICAL_ERRORS_ARE_FATAL)
   set(ICAL_ERRORS_ARE_FATAL 1)
 else()
@@ -254,6 +257,7 @@ add_feature_info(
   ICAL_ALLOW_EMPTY_PROPERTIES
   "prevents empty properties from being replaced with X-LIC-ERROR properties"
 )
+
 if(ICAL_ALLOW_EMPTY_PROPERTIES)
   set(ICAL_ALLOW_EMPTY_PROPERTIES 1)
 else()
@@ -261,16 +265,18 @@ else()
 endif()
 
 option(USE_BUILTIN_TZDATA "build using our own timezone data, else use the system timezone data on non-Windows systems. ALWAYS true on Windows.")
-if(USE_BUILTIN_TZDATA)
-  set(USE_BUILTIN_TZDATA 1)
-else()
-  set(USE_BUILTIN_TZDATA 0)
-endif()
 add_feature_info(
   "Option USE_BUILTIN_TZDATA"
   USE_BUILTIN_TZDATA
   "use our own timezone data rather then the system timezone data"
 )
+
+if(USE_BUILTIN_TZDATA)
+  set(USE_BUILTIN_TZDATA 1)
+else()
+  set(USE_BUILTIN_TZDATA 0)
+endif()
+
 if(WIN32 OR WINCE)
   #Always use builtin tzdata on Windows systems.
   if(NOT USE_BUILTIN_TZDATA)
@@ -311,14 +317,14 @@ if(GOBJECT_INTROSPECTION)
       message(FATAL_ERROR
         "You are attempting to build with GObject Introspection enabled, "
         "however that option is not supported when building static libraries only. "
-        "Please disable the static only option to cmake (-DSTATIC_ONLY=False) "
+        "Please disable the static only option to cmake (-DSTATIC_ONLY=FALSE) "
         "if you really want to build with GObject Introspection. Alternatively, "
-        "you can disable GObject Introspection (by passing -DGOBJECT_INTROSPECTION=False to cmake)")
+        "you can disable GObject Introspection (by passing -DGOBJECT_INTROSPECTION=FALSE to cmake)")
     endif()
   endif()
 endif()
 
-option(ICAL_BUILD_DOCS "Build documentation" True)
+option(ICAL_BUILD_DOCS "Build documentation" TRUE)
 add_feature_info(
   "Option ICAL_BUILD_DOCS"
   ICAL_BUILD_DOCS
@@ -335,7 +341,7 @@ if(ICAL_GLIB_VAPI)
   if(NOT GOBJECT_INTROSPECTION)
     message(FATAL_ERROR
       "You requested to build the Vala vapi but have not enabled the GObject Introspection. "
-      "Please try again also passing -DGOBJECT_INTROSPECTION=True to cmake"
+      "Please try again also passing -DGOBJECT_INTROSPECTION=TRUE to cmake"
     )
   endif()
 
@@ -343,7 +349,7 @@ if(ICAL_GLIB_VAPI)
   if(NOT VALAC)
     message(FATAL_ERROR
       "valac, the Vala compiler was not found. "
-      "Install it or disable Vala bindings with -DICAL_GLIB_VAPI=False"
+      "Install it or disable Vala bindings with -DICAL_GLIB_VAPI=FALSE"
     )
   endif()
 
@@ -351,30 +357,33 @@ if(ICAL_GLIB_VAPI)
   if(NOT VAPIGEN)
     message(FATAL_ERROR
       "vapigen, the tool for generating the Vala API was not found. "
-      "Install it or disable Vala bindings with -DICAL_GLIB_VAPI=False"
+      "Install it or disable Vala bindings with -DICAL_GLIB_VAPI=FALSE"
     )
   endif()
 endif()
 
 set(MIN_GLIB2 "2.32")
 set(MIN_LIBXML2 "2.7.3")
-option(ICAL_GLIB "Build libical-glib interface. Requires glib ${MIN_GLIB2} and libxml ${MIN_LIBXML2} development packages or higher." True)
+option(ICAL_GLIB "Build libical-glib interface. Requires glib ${MIN_GLIB2} and libxml ${MIN_LIBXML2} development packages or higher." TRUE)
 add_feature_info(
   "Option ICAL_GLIB"
   ICAL_GLIB
   "build libical-glib interface"
 )
+
 if(ICAL_GLIB)
   find_package(GLIB2 ${MIN_GLIB2})
   set_package_properties(GLIB2 PROPERTIES
     TYPE OPTIONAL
     PURPOSE "For the optional libical-glib interface"
   )
+
   find_package(LibXML2 ${MIN_LIBXML2} MODULE)
   set_package_properties(LibXML2 PROPERTIES
     TYPE OPTIONAL
     PURPOSE "For the optional libical-glib interface"
   )
+
   if(GLIB2_FOUND AND LIBXML2_FOUND)
     set(HAVE_GLIB TRUE)
   elseif(GLIB2_FOUND)
@@ -392,7 +401,7 @@ if(ICAL_GLIB)
       "You requested to build libical-glib, but the necessary development packages "
       "are missing or too low a version "
       "(glib ${MIN_GLIB2} and libxml ${MIN_LIBXML2} or higher are required)"
-      "Alternatively, disable the libical-glib build (by passing -DICAL_GLIB=False to cmake)"
+      "Alternatively, disable the libical-glib build (by passing -DICAL_GLIB=FALSE to cmake)"
     )
   endif()
 endif()
@@ -427,6 +436,7 @@ if(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" MATCHES "Clang")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_XOPEN_SOURCE=500 -D_DEFAULT_SOURCE -D_GNU_SOURCE")
   endif()
 endif()
+
 if("${CMAKE_C_COMPILER_ID}" MATCHES "Clang")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Qunused-arguments")
 endif()
@@ -440,34 +450,42 @@ if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
   check_cxx_compiler_flag(-Wformat-security HAVE_GXX_FORMAT_SECURITY)
   check_cxx_compiler_flag(-Wredundant-decls HAVE_GXX_REDUNDANT_DECLS)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -Weffc++ -Wno-deprecated -Wall -Wextra -Woverloaded-virtual -Winit-self -Wmissing-include-dirs -Wunused -Wno-div-by-zero -Wundef -Wpointer-arith -Wtype-limits -Wwrite-strings -Werror=return-type")
+
   if(HAVE_GXX_UNUSED_BUT_SET)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunused-but-set-variable")
   endif()
+
   if(HAVE_GXX_LOGICAL_OP)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wlogical-op")
   endif()
+
   if(HAVE_GXX_POINTER_MEMACCESS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsizeof-pointer-memaccess")
   endif()
+
   if(HAVE_GXX_REORDER)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wreorder")
   endif()
+
   if(HAVE_GXX_FORMAT_SECURITY)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wformat -Wformat-security")
   endif()
+
   if(HAVE_GXX_REDUNDANT_DECLS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wredundant-decls")
   endif()
+
   if(CMAKE_SYSTEM_NAME MATCHES Linux OR CMAKE_SYSTEM_NAME STREQUAL GNU)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_XOPEN_SOURCE=500 -D_DEFAULT_SOURCE -D_GNU_SOURCE")
   endif()
 endif()
+
 if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments")
 endif()
 
 ################ Developer Options #####################
-option(ABI_DUMPER "Build for abi-dumper." False)
+option(ABI_DUMPER "Build for abi-dumper." FALSE)
 if(ABI_DUMPER)
   if(CMAKE_COMPILER_IS_GNUCC)
     set(CMAKE_C_FLAGS "-g -Og")
@@ -478,7 +496,7 @@ if(ABI_DUMPER)
   endif()
 endif()
 
-option(ADDRESS_SANITIZER "Build with the address sanitizer." False)
+option(ADDRESS_SANITIZER "Build with the address sanitizer." FALSE)
 if(ADDRESS_SANITIZER)
   if(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" MATCHES "Clang")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -g")
@@ -487,23 +505,25 @@ if(ADDRESS_SANITIZER)
     message(FATAL_ERROR
       "You are trying to build with the address sanitizer using a non-GCC or Clang compiler.")
   endif()
+
   if(GOBJECT_INTROSPECTION)
     message(STATUS
       "Warning: Building the address sanitizer with GObject Introspection is is not supported. "
       "Turning-off GObject Introspection"
     )
-    set(HAVE_INTROSPECTION False)
+    set(HAVE_INTROSPECTION FALSE)
   endif()
+
   if(ICAL_GLIB)
     message(STATUS
       "Warning: Building the address sanitizer with the GObject interface is not supported. "
       "Turning-off the GObject interface"
     )
-    set(ICAL_GLIB False)
+    set(ICAL_GLIB FALSE)
   endif()
 endif()
 
-option(THREAD_SANITIZER "Build with the thread sanitizer." False)
+option(THREAD_SANITIZER "Build with the thread sanitizer." FALSE)
 if(THREAD_SANITIZER)
   if(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" MATCHES "Clang")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=thread -O1 -g")
@@ -512,25 +532,27 @@ if(THREAD_SANITIZER)
     message(FATAL_ERROR
       "You are trying to build with the thread sanitizer using a non-GCC or Clang compiler.")
   endif()
+
   if(GOBJECT_INTROSPECTION)
     message(STATUS
       "Warning: Building the thread sanitizer with GObject Introspection is is not supported. "
       "Turning-off GObject Introspection"
     )
-    set(HAVE_INTROSPECTION False)
+    set(HAVE_INTROSPECTION FALSE)
   endif()
+
   if(ICAL_GLIB)
     message(STATUS
       "Warning: Building the thread sanitizer with the GObject interface is not supported. "
       "Turning-off the GObject interface"
     )
-    set(ICAL_GLIB False)
+    set(ICAL_GLIB FALSE)
   endif()
 endif()
 
 ########################################################
 
-option(WITH_CXX_BINDINGS "Build the C++ bindings." True)
+option(WITH_CXX_BINDINGS "Build the C++ bindings." TRUE)
 if(WITH_CXX_BINDINGS)
   enable_language(CXX)
   if(CMAKE_CXX_COMPILER)
@@ -540,9 +562,10 @@ if(WITH_CXX_BINDINGS)
       "Warning: Building the C++ bindings is not possible since a C++ compiler could not be found. "
       "Turning-off C++ bindings"
     )
-    set(WITH_CXX_BINDINGS False)
+    set(WITH_CXX_BINDINGS FALSE)
   endif()
 endif()
+
 add_feature_info(
   "Option WITH_CXX_BINDINGS"
   WITH_CXX_BINDINGS
@@ -584,6 +607,7 @@ configure_file(
   ${CMAKE_CURRENT_BINARY_DIR}/libical.pc
   @ONLY
 )
+
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libical.pc DESTINATION ${LIB_INSTALL_DIR}/pkgconfig)
 
 ########### Create and install the CMake Config files ##########
