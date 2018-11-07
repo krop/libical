@@ -1,6 +1,11 @@
 Release Highlights
 ==================
 
+FIXME
+Version x.x.x:
+--------------
+ * Require CMake >= 3.7.0 (released in 2016)
+
 Version 3.1.0:
 --------------
  * New publicly available functions:
