@@ -71,7 +71,12 @@
 #
 
 cmake_minimum_required(VERSION 3.7.0) #first line, to shutup a cygwin warning
-project(libical C) #CXX is optional for the bindings
+#CXX is optional for the bindings
+project(libical
+   VERSION 3.0.95
+   LANGUAGES C
+)
+set(PROJECT_URL "http://libical.github.io/libical/")
 
 cmake_policy(SET CMP0003 NEW)
 if(POLICY CMP0042)
@@ -95,16 +100,6 @@ if(WINCE)
   set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${WCECOMPAT_INCLUDE_DIR})
   set(CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} ${WCECOMPAT_LIBRARIES})
 endif()
-
-set(LIBICAL_LIB_MAJOR_VERSION "3")
-set(LIBICAL_LIB_MINOR_VERSION "0")
-set(LIBICAL_LIB_PATCH_VERSION "95")
-set(LIBICAL_LIB_VERSION_STRING
-  "${LIBICAL_LIB_MAJOR_VERSION}.${LIBICAL_LIB_MINOR_VERSION}.${LIBICAL_LIB_PATCH_VERSION}"
-)
-
-set(PROJECT_VERSION "${LIBICAL_LIB_MAJOR_VERSION}.${LIBICAL_LIB_MINOR_VERSION}")
-set(PROJECT_URL "http://libical.github.io/libical/")
 
 # library build types
 set(LIBRARY_TYPE SHARED)
@@ -577,7 +572,7 @@ endif()
 
 ########### create and install pkg-config file #########
 
-set(VERSION "${LIBICAL_LIB_VERSION_STRING}")
+set(VERSION "${PROJECT_VERSION}")
 set(prefix "${CMAKE_INSTALL_PREFIX}")
 set(exec_prefix "\${prefix}")
 set(libdir "\${exec_prefix}/lib")
@@ -603,7 +598,7 @@ configure_package_config_file(
 # Create a version file
 write_basic_package_version_file(
   ${libical_BINARY_DIR}/LibIcalConfigVersion.cmake
-  VERSION ${LIBICAL_LIB_VERSION_STRING}
+  VERSION ${PROJECT_VERSION}
   COMPATIBILITY SameMajorVersion
 )
 

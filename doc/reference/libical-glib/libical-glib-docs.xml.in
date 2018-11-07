@@ -8,7 +8,7 @@
   <bookinfo>
     <title>libical-glib Reference Manual</title>
     <releaseinfo>
-      for libical-glib @LIBICAL_LIB_VERSION_STRING@.
+      for libical-glib @PROJECT_VERSION@.
     </releaseinfo>
   </bookinfo>
 

@@ -15,8 +15,8 @@ add_library(LibicalWrap ${LIBRARY_TYPE} ${LibicalWrap_LIB_SRCS})
 target_link_libraries(LibicalWrap)
 
 set_target_properties(LibicalWrap PROPERTIES
-  VERSION ${LIBICAL_LIB_VERSION_STRING}
-  SOVERSION ${LIBICAL_LIB_MAJOR_VERSION}
+  VERSION ${PROJECT_VERSION}
+  SOVERSION ${PROJECT_VERSION_MAJOR}
 )
 install(TARGETS LibicalWrap DESTINATION lib)
 

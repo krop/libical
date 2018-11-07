@@ -30,8 +30,8 @@ add_library(ical_jni ${LIBRARY_TYPE} ${ical_jni_LIB_SRCS})
 target_link_libraries(ical_jni ical_cxx)
 
 set_target_properties(ical_jni PROPERTIES
-  VERSION ${LIBICAL_LIB_VERSION_STRING}
-  SOVERSION ${LIBICAL_LIB_MAJOR_VERSION}
+  VERSION ${PROJECT_VERSION}
+  SOVERSION ${PROJECT_VERSION_MAJOR}
 )
 install(
   TARGETS ical_jni

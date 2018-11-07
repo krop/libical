@@ -165,12 +165,12 @@ if(HAVE_INTROSPECTION)
   #set(GObjectIntrospection_SCANNER_ARGS "--add-include-path=${CMAKE_CURRENT_SOURCE_DIR}")
   #set(GObjectIntrospection_COMPILER_ARGS "--includedir=${CMAKE_CURRENT_SOURCE_DIR}")
 
-  set(LIB_VERSION ${LIBICAL_LIB_VERSION_STRING})
+  set(LIB_VERSION ${PROJECT_VERSION})
   string(REPLACE "." "_" LIB_VERSION "${LIB_VERSION}")
   string(REPLACE "-" "_" LIB_VERSION "${LIB_VERSION}")
 
   set(libical_${LIB_VERSION}_gir "libical")
-  set(libical_${LIB_VERSION}_gir_VERSION ${LIBICAL_LIB_VERSION_STRING})
+  set(libical_${LIB_VERSION}_gir_VERSION ${PROJECT_VERSION})
   set(GObjectIntrospection_SCANNER_ARGS -I${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_BINARY_DIR}/src/libical/ical.h)
   set(libical_${LIB_VERSION}_gir_LIBRARY "ical")
   set(libical_${LIB_VERSION}_gir_INCLUDES GObject-2.0)
@@ -178,7 +178,7 @@ if(HAVE_INTROSPECTION)
   set(libical_${LIB_VERSION}_gir_CFLAGS ${_includes})
   set(libical_${LIB_VERSION}_gir_LIBS ical)
 
-  list(APPEND GObjectIntrospection_GIRS libical-${LIBICAL_LIB_VERSION_STRING}.gir)
+  list(APPEND GObjectIntrospection_GIRS libical-${PROJECT_VERSION}.gir)
 
   gir_add_introspections(GObjectIntrospection_GIRS)
 endif()
@@ -283,8 +283,8 @@ else()
   endif()
 endif()
 set_target_properties(ical PROPERTIES
-  VERSION ${LIBICAL_LIB_VERSION_STRING}
-  SOVERSION ${LIBICAL_LIB_MAJOR_VERSION}
+  VERSION ${PROJECT_VERSION}
+  SOVERSION ${PROJECT_VERSION_MAJOR}
 )
 set_target_properties(ical PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 if(NOT SHARED_ONLY)
@@ -341,8 +341,8 @@ if(WITH_CXX_BINDINGS)
   endif()
 
   set_target_properties(ical_cxx PROPERTIES
-    VERSION ${LIBICAL_LIB_VERSION_STRING}
-    SOVERSION ${LIBICAL_LIB_MAJOR_VERSION}
+    VERSION ${PROJECT_VERSION}
+    SOVERSION ${PROJECT_VERSION_MAJOR}
   )
   set_target_properties(ical_cxx PROPERTIES CLEAN_DIRECT_OUTPUT 1)
   if(NOT SHARED_ONLY)

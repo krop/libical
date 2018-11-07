@@ -117,7 +117,7 @@ if(HAVE_INTROSPECTION)
   endforeach()
 
   include(GObjectIntrospectionMacros)
-  set(LIBICAL_GLIB_GIR_VERSION_STRING "${LIBICAL_LIB_MAJOR_VERSION}.${LIBICAL_LIB_MINOR_VERSION}")
+  set(LIBICAL_GLIB_GIR_VERSION_STRING "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
 
   set(GObjectIntrospection_GIRS)
   set(GObjectIntrospection_SCANNER_FLAGS)
@@ -138,7 +138,7 @@ if(HAVE_INTROSPECTION)
     --add-include-path=${CMAKE_SOURCE_DIR}/src/libical
     --library-path=${LIBRARY_OUTPUT_PATH}
     --identifier-prefix=ICal
-    --pkg-export libical-glib-${LIBICAL_LIB_VERSION_STRING}
+    --pkg-export libical-glib-${PROJECT_VERSION}
     --c-include="libical-glib/libical-glib.h"
     --cflags-begin
     -I${CMAKE_BINARY_DIR}/src
@@ -201,8 +201,8 @@ else()
   endif()
 endif()
 set_target_properties(ical-glib PROPERTIES
-  VERSION ${LIBICAL_LIB_VERSION_STRING}
-  SOVERSION ${LIBICAL_LIB_MAJOR_VERSION}
+  VERSION ${PROJECT_VERSION}
+  SOVERSION ${PROJECT_VERSION_MAJOR}
 )
 set_target_properties(ical-glib PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 if(NOT SHARED_ONLY)
