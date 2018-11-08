@@ -232,9 +232,6 @@ typedef unsigned int wint_t;
 
 #cmakedefine SIZEOF_TIME_T ${SIZEOF_TIME_T}
 
-/* whether we have ICU DANGI calendar */
-#cmakedefine HAVE_ICU_DANGI
-
 /* getpwent - function to get password file entry */
 #if defined(HAVE_GETPWENT)
 #include <sys/types.h>

@@ -414,12 +414,12 @@ const struct recur rscale[] = {
     {"20130709",
      "RSCALE=ISLAMIC-CIVIL;FREQ=YEARLY;BYMONTH=9;COUNT=5",
      NULL},
-#if defined(HAVE_ICU_DANGI)
+
     /* Korean Buddha birthday */
     {"20131025",
      "RSCALE=DANGI;FREQ=YEARLY;BYMONTHDAY=8;BYMONTH=4;UNTIL=20160101",
      NULL},
-#endif
+
     /* Chinese leap month (no leap) */
     {"20131025",
      "RSCALE=CHINESE;FREQ=YEARLY;BYMONTHDAY=10;BYMONTH=9;COUNT=3",

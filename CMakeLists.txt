@@ -158,7 +158,7 @@ endif()
 # libicu is highly recommended for RSCALE support.
 # libicu can be found at http://www.icu-project.org
 # RSCALE info at http://tools.ietf.org/html/rfc7529
-find_package(ICU OPTIONAL_COMPONENTS i18n)
+find_package(ICU 0.51 OPTIONAL_COMPONENTS i18n)
 set_package_properties(ICU PROPERTIES
   TYPE RECOMMENDED
   PURPOSE "For RSCALE (RFC7529) support"
@@ -171,12 +171,8 @@ add_feature_info(
 if(ICU_FOUND)
   set(REQUIRES_PRIVATE_ICU "Requires.private: icu-i18n") #for libical.pc
   set(HAVE_LIBICU 1)
-  if(ICU_MAJOR_VERSION VERSION_GREATER 50)
-    set(HAVE_ICU_DANGI TRUE)
-  else()
-    set(HAVE_ICU_DANGI FALSE)
-  endif()
 endif()
+
 if(TARGET ICU::i18n)
   set(HAVE_LIBICU_I18N 1)
 endif()
