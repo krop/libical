@@ -183,7 +183,7 @@ if(NOT WIN32) #since we currently do not have a Windows reference file
       if(ICU_FOUND)
         #test rscale capable rrules
         set(test_args "-r")
-        set(reference_data "icalrecur_withicu_dangi_test.out")
+        set(reference_data "icalrecur_withicu_test.out")
         add_test(NAME icalrecurtest-r
           COMMAND ${CMAKE_COMMAND}
           -D test_cmd=${test_cmd}
