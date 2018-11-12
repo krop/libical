@@ -6,13 +6,22 @@ Version x.x.x:
 --------------
  * Require CMake >= 3.7.0 (released in 2016)
 
-Version 3.1.0:
+Version 3.1.0 (NOT RELEASED YET):
 --------------
  * New publicly available functions:
      + icalrecurrencetype_encode_day
      + icalrecurrencetype_encode_month
      + icaltzutil_set_zone_directory
  * icaltzutil_get_zone_directory() can use the TZDIR environment to find system zoneinfo
+ * Deprecated functions:
+     + caldat
+     + juldat
+
+Version 3.0.5 (NOT RELEASED YET):
+-------------
+ * New publicly available function:
+     + icalproperty_get_datetime_with_component()
+ * New CMake option ENABLE_GTK_DOC for disabling the libical-glib developer documentation
 
 Version 3.0.4:
 --------------
