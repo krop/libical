@@ -1,12 +1,3 @@
-include_directories(
-  ${CMAKE_BINARY_DIR}
-  ${CMAKE_SOURCE_DIR}/src
-  ${CMAKE_BINARY_DIR}/src
-  ${CMAKE_SOURCE_DIR}/src/libical
-  ${CMAKE_BINARY_DIR}/src/libical
-  ${CMAKE_SOURCE_DIR}/src/libicalss
-)
-
 if(ICU_FOUND)
   include_directories(${ICU_INCLUDE_DIRS})
 endif()
@@ -21,8 +12,8 @@ endif()
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 
-set(TEST_DATADIR "\"${CMAKE_SOURCE_DIR}/test-data\"")
-add_definitions(-DTEST_DATADIR=${TEST_DATADIR})
+set(TEST_DATADIR "${CMAKE_SOURCE_DIR}/test-data")
+add_definitions(-DTEST_DATADIR="${TEST_DATADIR}")
 
 macro(setprops _name)
   if(UNIX)

@@ -1,13 +1,5 @@
 add_definitions(-Dlibical_vcal_EXPORTS)
 
-include_directories(
-  ${CMAKE_BINARY_DIR}
-  ${CMAKE_BINARY_DIR}/src
-  ${CMAKE_SOURCE_DIR}/src
-  ${CMAKE_BINARY_DIR}/src/libical
-  ${CMAKE_SOURCE_DIR}/src/libical
-)
-
 #these are generated sources, but we keep them in the repo
 set(icalvcal_LIB_DEVSRCS vcc.c)
 
@@ -27,38 +19,41 @@ set(icalvcal_LIB_SRCS
 
 add_library(icalvcal ${LIBRARY_TYPE} ${icalvcal_LIB_SRCS})
 add_dependencies(icalvcal ical-header)
-if(NOT SHARED_ONLY)
-  add_library(icalvcal-static STATIC ${icalvcal_LIB_SRCS})
-  add_dependencies(icalvcal-static ical-header)
-endif()
 
+target_include_directories(icalvcal PUBLIC "$<BUILD_INTERFACE:${libical_SOURCE_DIR}/src>")
 target_link_libraries(icalvcal ical)
 
 if(MSVC)
   set_target_properties(icalvcal PROPERTIES PREFIX "lib")
-  if(NOT SHARED_ONLY)
-    set_target_properties(icalvcal-static PROPERTIES PREFIX "lib")
-  endif()
-else()
-  if(NOT SHARED_ONLY)
-    set_target_properties(icalvcal-static PROPERTIES OUTPUT_NAME "icalvcal")
-  endif()
 endif()
+
 set_target_properties(icalvcal PROPERTIES
   VERSION ${PROJECT_VERSION}
   SOVERSION ${PROJECT_VERSION_MAJOR}
 )
+
 set_target_properties(icalvcal PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-if(NOT SHARED_ONLY)
-  set_target_properties(icalvcal-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-endif()
 
 install(
   TARGETS icalvcal
   EXPORT icalTargets
   DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS}
 )
+
+########### next target ###############
 if(NOT SHARED_ONLY)
+  add_library(icalvcal-static STATIC ${icalvcal_LIB_SRCS})
+  add_dependencies(icalvcal-static ical-header)
+
+  target_include_directories(icalvcal-static PUBLIC "$<BUILD_INTERFACE:${libical_BINARY_DIR};$<TARGET_PROPERTY:ical-static,INTERFACE_INCLUDE_DIRECTORIES>>")
+
+  if(MSVC)
+    set_target_properties(icalvcal-static PROPERTIES PREFIX "lib")
+  else()
+    set_target_properties(icalvcal-static PROPERTIES OUTPUT_NAME "icalvcal")
+  endif()
+  set_target_properties(icalvcal-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+
   install(
     TARGETS icalvcal-static
     EXPORT icalTargets
@@ -76,4 +71,5 @@ install(FILES
   libical_vcal_export.h
   DESTINATION
   ${INCLUDE_INSTALL_DIR}/libical
+  COMPONENT Devel
 )

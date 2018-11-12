@@ -8,7 +8,7 @@ add_executable(src-generator
   tools/xml-parser.h
 )
 
-target_compile_options(src-generator PUBLIC -DG_LOG_DOMAIN=\"src-generator\")
+target_compile_options(src-generator PUBLIC -DG_LOG_DOMAIN="src-generator")
 target_link_libraries(src-generator GLIB2::GLIB2 LIBXML2::LIBXML2)
 
 list(APPEND API_FILES
@@ -60,13 +60,13 @@ foreach(file IN LISTS API_FILES)
   string(REPLACE ".xml" ".h" h_file ${bin_file})
   string(REPLACE ".xml" ".c" c_file ${bin_file})
 
-  list(APPEND LIBICAL_GLIB_SOURCES ${h_file} ${c_file})
+  list(APPEND LIBICAL_GLIB_SRCS ${h_file} ${c_file})
   list(APPEND LIBICAL_GLIB_HEADERS ${h_file})
   list(APPEND xml_files ${xml_file_fullpath})
 endforeach()
 
 add_custom_command (
-  OUTPUT ${LIBICAL_GLIB_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/libical-glib-private.h ${CMAKE_CURRENT_BINARY_DIR}/i-cal-forward-declarations.h
+  OUTPUT ${LIBICAL_GLIB_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/libical-glib-private.h ${CMAKE_CURRENT_BINARY_DIR}/i-cal-forward-declarations.h
   COMMAND ${EXECUTABLE_OUTPUT_PATH}/src-generator "${CMAKE_CURRENT_SOURCE_DIR}/tools" "${CMAKE_CURRENT_SOURCE_DIR}/api"
   DEPENDS ${EXECUTABLE_OUTPUT_PATH}/src-generator ${xml_files}
 )
@@ -83,35 +83,68 @@ configure_file(
   COPYONLY
 )
 
-list(APPEND LIBICAL_GLIB_SOURCES
+list(APPEND LIBICAL_GLIB_SRCS
   ${CMAKE_CURRENT_BINARY_DIR}/libical-glib-private.h
   ${CMAKE_CURRENT_BINARY_DIR}/i-cal-object.c
   ${CMAKE_CURRENT_BINARY_DIR}/i-cal-object.h
 )
 
-include_directories(
-  ${CMAKE_BINARY_DIR}
-  ${CMAKE_BINARY_DIR}/src
-  ${CMAKE_SOURCE_DIR}/src
-  ${CMAKE_BINARY_DIR}/src/libical
-  ${CMAKE_SOURCE_DIR}/src/libical
+########### next target ###############
+
+add_library(ical-glib ${LIBRARY_TYPE} ${LIBICAL_GLIB_SRCS})
+add_dependencies(ical-glib ical-header)
+
+target_compile_definitions(ical-glib PRIVATE -DG_LOG_DOMAIN="libical-glib" -DLIBICAL_GLIB_COMPILATION)
+target_include_directories(ical-glib PUBLIC "$<BUILD_INTERFACE:${libical_BINARY_DIR};${libical_BINARY_DIR}/src>")
+
+target_link_libraries(ical-glib PRIVATE ical GLIB2::GLIB2)
+
+if(MSVC)
+  set_target_properties(ical-glib PROPERTIES PREFIX "lib")
+endif()
+
+set_target_properties(ical-glib PROPERTIES
+  VERSION ${PROJECT_VERSION}
+  SOVERSION ${PROJECT_VERSION_MAJOR}
 )
 
-add_library(ical-glib ${LIBRARY_TYPE} ${LIBICAL_GLIB_SOURCES})
-add_dependencies(ical-glib ical-header)
-target_compile_definitions(ical-glib PRIVATE -DG_LOG_DOMAIN="libical-glib" -DLIBICAL_GLIB_COMPILATION)
-target_link_libraries(ical-glib PRIVATE ical GLIB2::GLIB2)
+set_target_properties(ical-glib PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+
+install(
+  TARGETS ical-glib
+  EXPORT icalTargets
+  DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS}
+)
+
+########### next target ###############
+
 if(NOT SHARED_ONLY)
-  add_library(ical-glib-static STATIC ${LIBICAL_GLIB_SOURCES})
+  add_library(ical-glib-static STATIC ${LIBICAL_GLIB_SRCS})
   add_dependencies(ical-glib-static ical-header)
+
+  target_include_directories(ical-glib-static PUBLIC "$<BUILD_INTERFACE:${libical_BINARY_DIR};${libical_BINARY_DIR}/src;$<TARGET_PROPERTY:ical-static,INTERFACE_INCLUDE_DIRECTORIES>>")
+
   target_compile_options(ical-glib-static PUBLIC -DG_LOG_DOMAIN="libical-glib" -DLIBICAL_GLIB_COMPILATION)
   target_link_libraries(ical-glib-static GLIB2::GLIB2)
+
+  if(MSVC)
+    set_target_properties(icalss-static PROPERTIES PREFIX "lib")
+  else()
+    set_target_properties(icalss-static PROPERTIES OUTPUT_NAME "icalss")
+  endif()
+  set_target_properties(icalss-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+
+  install(
+    TARGETS ical-glib-static
+    EXPORT icalTargets
+    DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS}
+  )
 endif()
 
 # GObject Introspection
 if(HAVE_INTROSPECTION)
   # extract only file names without path for introspection
-  foreach(file IN LISTS LIBICAL_GLIB_SOURCES)
+  foreach(file IN LISTS LIBICAL_GLIB_SRCS)
     string(REPLACE "${CMAKE_CURRENT_BINARY_DIR}/" "" plain_file ${file})
     list(APPEND LIBICAL_GLIB_GIR_SOURCES ${plain_file})
   endforeach()
@@ -190,42 +223,11 @@ if(ICAL_GLIB_VAPI)
   install(FILES ${vapi_file} DESTINATION ${SHARE_INSTALL_DIR}/vala/vapi)
 endif()
 
-if(MSVC)
-  set_target_properties(ical-glib PROPERTIES PREFIX "lib")
-  if(NOT SHARED_ONLY)
-    set_target_properties(ical-glib-static PROPERTIES PREFIX "lib")
-  endif()
-else()
-  if(NOT SHARED_ONLY)
-    set_target_properties(ical-glib-static PROPERTIES OUTPUT_NAME "ical-glib")
-  endif()
-endif()
-set_target_properties(ical-glib PROPERTIES
-  VERSION ${PROJECT_VERSION}
-  SOVERSION ${PROJECT_VERSION_MAJOR}
-)
-set_target_properties(ical-glib PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-if(NOT SHARED_ONLY)
-  set_target_properties(ical-glib-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-endif()
-
-install(
-  TARGETS ical-glib
-  EXPORT icalTargets
-  DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS}
-)
-if(NOT SHARED_ONLY)
-  install(
-    TARGETS ical-glib-static
-    EXPORT icalTargets
-    DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS}
-  )
-endif()
-
 ########### install files ###############
 
 install(FILES ${LIBICAL_GLIB_HEADERS}
   DESTINATION ${INCLUDE_INSTALL_DIR}/libical-glib
+  COMPONENT Devel
 )
 
 ########### create and install pkg-config file #########

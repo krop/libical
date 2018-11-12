@@ -6,21 +6,14 @@ configure_file(
   @ONLY
 )
 
-include_directories(
-  ${CMAKE_BINARY_DIR}
-  ${CMAKE_BINARY_DIR}/src
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_BINARY_DIR}
-)
-
 if(ICU_FOUND)
   include_directories(${ICU_INCLUDE_DIRS})
 endif()
 
-set(PACKAGE_DATA_DIR "\\\"${CMAKE_INSTALL_PREFIX}/share/libical\\\"")
+set(PACKAGE_DATA_DIR "${CMAKE_INSTALL_PREFIX}/share/libical")
 add_definitions(-DPACKAGE_DATA_DIR="${PACKAGE_DATA_DIR}")
 
-set(ICALSCRIPTS ${CMAKE_SOURCE_DIR}/scripts/)
+set(ICALSCRIPTS "${CMAKE_SOURCE_DIR}/scripts/")
 set(BUILT_HEADERS) #list of derived headers we build
 set(BUILD_SOURCES) #list of derived implementations we build
 
@@ -145,13 +138,8 @@ add_custom_command(
 )
 list(APPEND BUILT_SOURCES ${CMAKE_BINARY_DIR}/src/libical/icalderivedvalue.c)
 
-if(WIN32)
-  set(TOPS "\"${CMAKE_SOURCE_DIR}\"")
-  set(TOPB "\"${CMAKE_BINARY_DIR}\"")
-else()
-  set(TOPS "${CMAKE_SOURCE_DIR}")
-  set(TOPB "${CMAKE_BINARY_DIR}")
-endif()
+set(TOPS "${CMAKE_SOURCE_DIR}")
+set(TOPB "${CMAKE_BINARY_DIR}")
 
 add_custom_target(
   ical-header ALL
@@ -254,11 +242,8 @@ add_custom_command(
 
 add_library(ical ${LIBRARY_TYPE} ${ical_LIB_SRCS})
 add_dependencies(ical ical-header)
-if(NOT SHARED_ONLY)
-  add_library(ical-static STATIC ${ical_LIB_SRCS})
-  add_dependencies(ical-static ical-header)
-endif()
 
+target_include_directories(ical PUBLIC "$<BUILD_INTERFACE:${libical_BINARY_DIR};${libical_SOURCE_DIR}/src/libical;${libical_BINARY_DIR}/src/libical>")
 target_link_libraries(ical ${CMAKE_THREAD_LIBS_INIT})
 
 if(ICU_FOUND)
@@ -274,29 +259,33 @@ endif()
 
 if(MSVC)
   set_target_properties(ical PROPERTIES PREFIX "lib")
-  if(NOT SHARED_ONLY)
-    set_target_properties(ical-static PROPERTIES PREFIX "lib")
-  endif()
-else()
-  if(NOT SHARED_ONLY)
-    set_target_properties(ical-static PROPERTIES OUTPUT_NAME "ical")
-  endif()
 endif()
+
 set_target_properties(ical PROPERTIES
   VERSION ${PROJECT_VERSION}
   SOVERSION ${PROJECT_VERSION_MAJOR}
 )
+
 set_target_properties(ical PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-if(NOT SHARED_ONLY)
-  set_target_properties(ical-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-endif()
 
 install(
   TARGETS ical
   EXPORT icalTargets
   DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS}
 )
+
+########### next target ###############
+
 if(NOT SHARED_ONLY)
+  add_library(ical-static STATIC ${ical_LIB_SRCS})
+  add_dependencies(ical-static ical-header)
+  target_include_directories(ical-static PUBLIC "$<BUILD_INTERFACE:${libical_BINARY_DIR};${libical_SOURCE_DIR}/src/libical;${libical_BINARY_DIR}/src/libical>")
+  set_target_properties(ical-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+  if(MSVC)
+    set_target_properties(ical-static PROPERTIES PREFIX "lib")
+  else()
+    set_target_properties(ical-static PROPERTIES OUTPUT_NAME "ical")
+  endif()
   install(
     TARGETS ical-static
     EXPORT icalTargets
@@ -323,49 +312,45 @@ if(WITH_CXX_BINDINGS)
 
   add_library(ical_cxx ${LIBRARY_TYPE} ${icalcxx_LIB_SRCS})
   add_dependencies(ical_cxx ical-header)
-  if(NOT SHARED_ONLY)
-    add_library(ical_cxx-static STATIC ${icalcxx_LIB_SRCS})
-    add_dependencies(ical_cxx-static ical-header)
-  endif()
+
+  set_target_properties(ical_cxx PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+
   target_link_libraries(ical_cxx ical ${CMAKE_THREAD_LIBS_INIT})
 
   if(MSVC)
     set_target_properties(ical_cxx PROPERTIES PREFIX "lib")
-    if(NOT SHARED_ONLY)
-      set_target_properties(ical_cxx-static PROPERTIES PREFIX "lib")
-    endif()
-  else()
-    if(NOT SHARED_ONLY)
-      set_target_properties(ical_cxx-static PROPERTIES OUTPUT_NAME "ical_cxx")
-    endif()
   endif()
 
   set_target_properties(ical_cxx PROPERTIES
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION_MAJOR}
   )
-  set_target_properties(ical_cxx PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-  if(NOT SHARED_ONLY)
-    set_target_properties(ical_cxx-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-  endif()
-
   install(
     TARGETS ical_cxx
     EXPORT icalTargets
     DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS}
   )
+
+  ########### next target ###############
+
   if(NOT SHARED_ONLY)
+    add_library(ical_cxx-static STATIC ${icalcxx_LIB_SRCS})
+    add_dependencies(ical_cxx-static ical-header)
+    target_include_directories(ical_cxx-static PUBLIC "$<BUILD_INTERFACE:$<TARGET_PROPERTY:ical-static,INTERFACE_INCLUDE_DIRECTORIES>>")
+    set_target_properties(ical_cxx-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+    if(MSVC)
+      set_target_properties(ical_cxx-static PROPERTIES PREFIX "lib")
+      remove_definitions(-DBUILD_LIBICALDLL)
+    else()
+      set_target_properties(ical_cxx-static PROPERTIES OUTPUT_NAME "ical_cxx")
+    endif()
+
     install(
-      TARGETS ical_cxx-static
-      EXPORT icalTargets
-      DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS}
-    )
+        TARGETS ical_cxx-static
+        EXPORT icalTargets
+        DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS}
+      )
   endif()
-
-  if(MSVC)
-    remove_definitions(-DBUILD_LIBICALDLL)
-  endif()
-
 endif()
 
 ########### install files ###############
@@ -398,6 +383,7 @@ install(FILES
   sspm.h
   DESTINATION
   ${INCLUDE_INSTALL_DIR}/libical
+  COMPONENT Devel
 )
 
 if(WITH_CXX_BINDINGS)
@@ -409,5 +395,6 @@ if(WITH_CXX_BINDINGS)
     vcomponent_cxx.h
     DESTINATION
     ${INCLUDE_INSTALL_DIR}/libical
+    COMPONENT Devel
   )
 endif()

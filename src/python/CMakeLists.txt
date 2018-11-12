@@ -1,8 +1,3 @@
-include_directories(
-  ${CMAKE_SOURCE_DIR}/src
-  ${CMAKE_SOURCE_DIR}/src/libical
-  ${CMAKE_SOURCE_DIR}/src/libicalss
-)
 
 ########### next target ###############
 
