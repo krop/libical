@@ -150,17 +150,13 @@ if(HAVE_INTROSPECTION)
   endforeach()
 
   include(GObjectIntrospectionMacros)
-  set(LIBICAL_GLIB_GIR_VERSION_STRING "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
+  set(LIBICAL_GLIB_GIR_VERSION_STRING "${LIBICAL_LIB_MAJOR_VERSION}.0")
+  set(LIB_VERSION "${LIBICAL_LIB_MAJOR_VERSION}_0")
 
   set(GObjectIntrospection_GIRS)
   set(GObjectIntrospection_SCANNER_FLAGS)
   set(GObjectIntrospection_SCANNER_ARGS)
   set(GObjectIntrospection_COMPILER_ARGS)
-  set(LIB_VERSION)
-
-  set(LIB_VERSION ${LIBICAL_GLIB_GIR_VERSION_STRING})
-  string(REPLACE "." "_" LIB_VERSION "${LIB_VERSION}")
-  string(REPLACE "-" "_" LIB_VERSION "${LIB_VERSION}")
 
   set(GObjectIntrospection_SCANNER_ARGS
     --add-include-path=${CMAKE_CURRENT_BINARY_DIR}
@@ -171,8 +167,8 @@ if(HAVE_INTROSPECTION)
     --add-include-path=${CMAKE_SOURCE_DIR}/src/libical
     --library-path=${LIBRARY_OUTPUT_PATH}
     --identifier-prefix=ICal
-    --pkg-export libical-glib-${PROJECT_VERSION}
-    --c-include="libical-glib/libical-glib.h"
+    --pkg-export libical-glib
+    --c-include=libical-glib/libical-glib.h
     --cflags-begin
     -I${CMAKE_BINARY_DIR}/src
     -I${CMAKE_BINARY_DIR}/src/libical

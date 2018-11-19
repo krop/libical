@@ -163,8 +163,8 @@ if(HAVE_INTROSPECTION)
   set(libical_${LIB_VERSION}_gir_LIBRARY "ical")
   set(libical_${LIB_VERSION}_gir_INCLUDES GObject-2.0)
   set(_includes ${_includes} "-L${LIBRARY_OUTPUT_PATH}")
-  set(libical_${LIB_VERSION}_gir_CFLAGS ${_includes})
-  set(libical_${LIB_VERSION}_gir_LIBS ical)
+  set(ICal_${LIB_VERSION}_gir_CFLAGS ${_includes})
+  set(ICal_${LIB_VERSION}_gir_LIBS ical)
 
   list(APPEND GObjectIntrospection_GIRS libical-${PROJECT_VERSION}.gir)
 
